@@ -33,7 +33,6 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
-    { title: 'POS Dashboard', href: '/dashboard-pos', icon: Store },
     { title: 'Kasir (POS)', href: '/sales/pos', icon: ShoppingCart },
     { title: 'Produk', href: '/products', icon: Package },
     { title: 'Pembelian', href: '/purchases', icon: Receipt },
@@ -45,16 +44,7 @@ const mainNavItems: NavItem[] = [
 ];
 
 const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
+   
 ];
 
 export function AppSidebar() {

@@ -39,3 +39,23 @@ export function formatQty(value: number | string | null | undefined): string {
 
     return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 3 }).format(n);
 }
+
+export const UNIT_OPTIONS = [
+    'pcs',
+    'pack',
+    'dus',
+    'box',
+    'karton',
+    'lusin',
+    'kg',
+    'g',
+    'liter',
+    'ml',
+    'sachet',
+    'botol',
+    'kaleng',
+    'set',
+    'pasang',
+    'roll',
+    'm',
+] as const;

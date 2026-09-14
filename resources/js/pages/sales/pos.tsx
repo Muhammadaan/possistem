@@ -1,6 +1,7 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import BranchSwitcher from '@/components/branch-switcher';
+import QtyInput from '@/components/qty-input';
 import RupiahInput from '@/components/rupiah-input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -56,7 +57,7 @@ export default function Pos({ branch, branches, isOwner, products }: { branch: B
                         {cart.map((c, i) => (
                             <div key={i} className="flex gap-2">
                                 <span className="flex-1 text-sm">{products.find((p) => p.id === c.product_id)?.name}</span>
-                                <Input type="number" step="0.001" value={c.qty} onChange={(e) => setCart(cart.map((x, j) => (j === i ? { ...x, qty: Number(e.target.value) } : x)))} className="w-20" />
+                                <QtyInput value={c.qty} onValueChange={(n) => setCart(cart.map((x, j) => (j === i ? { ...x, qty: n } : x)))} className="w-20" />
                                 <RupiahInput value={c.price} onValueChange={(n) => setCart(cart.map((x, j) => (j === i ? { ...x, price: n } : x)))} className="w-36" />
                                 <Button size="sm" variant="outline" onClick={() => setCart(cart.filter((_, j) => j !== i))}>x</Button>
                             </div>

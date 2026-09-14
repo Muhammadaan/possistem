@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Concerns\ResolvesBranch;
 use App\Http\Requests\StoreProductRequest;
 use App\Models\Product;
+use App\Models\StockMovement;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -39,18 +41,39 @@ class ProductController extends Controller
         $branch = $this->resolveBranch($request);
         abort_if((int) $data['branch_id'] !== $branch->id && ! $request->user()->isOwner(), 403);
 
-        $product = Product::create([
-            'branch_id' => $data['branch_id'],
-            'sku' => $data['sku'],
-            'name' => $data['name'],
-            'unit' => $data['unit'] ?? 'pcs',
-            'selling_price' => $data['selling_price'],
-            'is_active' => $data['is_active'] ?? true,
-        ]);
+        $openingStock = (float) ($data['opening_stock'] ?? 0);
+        $initialCost = (float) ($data['initial_cost'] ?? 0);
 
-        foreach ($data['tiers'] ?? [] as $tier) {
-            $product->priceTiers()->create($tier);
-        }
+        DB::transaction(function () use ($data, $openingStock, $initialCost) {
+            $product = Product::create([
+                'branch_id' => $data['branch_id'],
+                'sku' => $data['sku'],
+                'name' => $data['name'],
+                'unit' => $data['unit'] ?? 'pcs',
+                'selling_price' => $data['selling_price'],
+                'average_cost' => $initialCost,
+                'stock' => $openingStock,
+                'is_active' => $data['is_active'] ?? true,
+            ]);
+
+            foreach ($data['tiers'] ?? [] as $tier) {
+                $product->priceTiers()->create($tier);
+            }
+
+            if ($openingStock != 0) {
+                StockMovement::create([
+                    'branch_id' => $data['branch_id'],
+                    'product_id' => $product->id,
+                    'type' => StockMovement::TYPE_ADJUSTMENT,
+                    'reference_type' => null,
+                    'reference_id' => null,
+                    'qty' => $openingStock,
+                    'stock_before' => 0,
+                    'stock_after' => $openingStock,
+                    'note' => 'Stok awal',
+                ]);
+            }
+        });
 
         return redirect()->back()->with('success', 'Produk dibuat.');
     }

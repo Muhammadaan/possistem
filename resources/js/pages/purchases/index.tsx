@@ -1,6 +1,8 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import BranchSwitcher from '@/components/branch-switcher';
+import ProductPicker from '@/components/product-picker';
+import QtyInput from '@/components/qty-input';
 import RupiahInput from '@/components/rupiah-input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -85,7 +87,7 @@ export default function PurchasesIndex({ branch, branches, isOwner, purchases, s
             </Dialog>
 
             <Dialog open={openCreate} onOpenChange={setOpenCreate}>
-                <DialogContent className="sm:max-w-2xl">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
                     <DialogHeader><DialogTitle>Buat Pembelian — {branch.code}</DialogTitle></DialogHeader>
                     <form onSubmit={submitCreate} className="grid gap-3">
                         <div className="flex flex-wrap gap-2">
@@ -99,11 +101,8 @@ export default function PurchasesIndex({ branch, branches, isOwner, purchases, s
                         </div>
                         {rows.map((r, i) => (
                             <div key={i} className="flex flex-wrap items-center gap-2">
-                                <select value={r.product_id} onChange={(e) => { const v = [...rows]; v[i].product_id = Number(e.target.value); v[i].price = tierPrice(v[i].product_id, v[i].qty); setRows(v); }} className="w-64 rounded border p-2">
-                                    <option value={0}>Pilih barang</option>
-                                    {products.map((p) => (<option key={p.id} value={p.id}>{p.sku} - {p.name}</option>))}
-                                </select>
-                                <Input type="number" step="0.001" value={r.qty} onChange={(e) => { const v = [...rows]; v[i].qty = Number(e.target.value); v[i].price = tierPrice(v[i].product_id, v[i].qty) || v[i].price; setRows(v); }} className="w-24" placeholder="Qty" />
+                                <ProductPicker products={products} value={r.product_id} onSelect={(id) => { const v = [...rows]; v[i].product_id = id; v[i].price = tierPrice(id, v[i].qty); setRows(v); }} />
+                                <QtyInput value={r.qty} onValueChange={(n) => { const v = [...rows]; v[i].qty = n; v[i].price = tierPrice(v[i].product_id, n) || v[i].price; setRows(v); }} className="w-24" />
                                 <RupiahInput value={r.price} onValueChange={(n) => { const v = [...rows]; v[i].price = n; setRows(v); }} className="w-40" placeholder="Harga" />
                                 <span className="text-sm">{formatIDR(r.qty * r.price)}</span>
                                 <Button type="button" size="sm" variant="outline" onClick={() => setRows(rows.filter((_, j) => j !== i))}>x</Button>

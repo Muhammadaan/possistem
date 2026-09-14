@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Route;
 Route::inertia('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
-    Route::get('dashboard-pos', [DashboardController::class, 'index'])->name('dashboard.pos');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::redirect('dashboard-pos', 'dashboard', 301);
 
     Route::get('branches', [BranchController::class, 'index'])->name('branches.index');
     Route::post('branches', [BranchController::class, 'store'])->name('branches.store');

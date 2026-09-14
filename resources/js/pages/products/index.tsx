@@ -1,13 +1,15 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import { RefreshCw } from 'lucide-react';
 import BranchSwitcher from '@/components/branch-switcher';
+import QtyInput from '@/components/qty-input';
 import RupiahInput from '@/components/rupiah-input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { formatIDR, formatQty } from '@/lib/utils';
+import { formatIDR, formatQty, UNIT_OPTIONS } from '@/lib/utils';
 
 type Tier = { min_qty: number; purchase_price: number };
 type Product = { id: number; sku: string; name: string; unit: string; selling_price: string; average_cost: string; stock: string; is_active: boolean; price_tiers: Tier[] };
@@ -19,16 +21,30 @@ export default function ProductsIndex({ branch, branches, isOwner, products, q }
     const [editing, setEditing] = useState<Product | null>(null);
     const [deleting, setDeleting] = useState<Product | null>(null);
     const [deleteError, setDeleteError] = useState<string | null>(null);
-    const form = useForm({ branch_id: branch.id, sku: '', name: '', unit: 'pcs', selling_price: '', is_active: true as boolean, tiers: [{ min_qty: 1, purchase_price: 0 }] as Tier[] });
+    const [skuAuto, setSkuAuto] = useState(true);
+    const form = useForm({ branch_id: branch.id, sku: '', name: '', unit: 'pcs', selling_price: '', is_active: true as boolean, tiers: [{ min_qty: 1, purchase_price: 0 }] as Tier[], opening_stock: 0, initial_cost: 0 });
+
+    const generateSKU = (name: string) => {
+        const base = name
+            .toUpperCase()
+            .replace(/[^A-Z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+            .slice(0, 12)
+            .replace(/-+$/g, '');
+        const rand = Math.floor(100 + Math.random() * 900);
+        return base ? `${base}-${rand}` : `BRG-${Date.now().toString().slice(-6)}`;
+    };
 
     const openCreate = () => {
         setEditing(null);
-        form.setData({ branch_id: branch.id, sku: '', name: '', unit: 'pcs', selling_price: '', is_active: true, tiers: [{ min_qty: 1, purchase_price: 0 }] });
+        setSkuAuto(true);
+        form.setData({ branch_id: branch.id, sku: '', name: '', unit: 'pcs', selling_price: '', is_active: true, tiers: [{ min_qty: 1, purchase_price: 0 }], opening_stock: 0, initial_cost: 0 });
         setOpen(true);
     };
     const openEdit = (p: Product) => {
         setEditing(p);
-        form.setData({ branch_id: branch.id, sku: p.sku, name: p.name, unit: p.unit, selling_price: String(p.selling_price), is_active: p.is_active, tiers: p.price_tiers.length ? p.price_tiers.map((t) => ({ min_qty: Number(t.min_qty), purchase_price: Number(t.purchase_price) })) : [{ min_qty: 1, purchase_price: 0 }] });
+        setSkuAuto(false);
+        form.setData({ branch_id: branch.id, sku: p.sku, name: p.name, unit: p.unit, selling_price: String(p.selling_price), is_active: p.is_active, tiers: p.price_tiers.length ? p.price_tiers.map((t) => ({ min_qty: Number(t.min_qty), purchase_price: Number(t.purchase_price) })) : [{ min_qty: 1, purchase_price: 0 }], opening_stock: 0, initial_cost: 0 });
         setOpen(true);
     };
     const submit = (e: React.FormEvent) => {
@@ -82,16 +98,34 @@ export default function ProductsIndex({ branch, branches, isOwner, products, q }
                     <DialogHeader><DialogTitle>{editing ? `Edit ${editing.sku}` : 'Tambah Produk'}</DialogTitle></DialogHeader>
                     <form onSubmit={submit} className="grid gap-3">
                         <div className="grid grid-cols-2 gap-2">
-                            <div className="grid gap-1"><Label>SKU</Label><Input value={form.data.sku} onChange={(e) => form.setData('sku', e.target.value)} required /></div>
-                            <div className="grid gap-1"><Label>Satuan</Label><Input value={form.data.unit} onChange={(e) => form.setData('unit', e.target.value)} /></div>
+                            <div className="grid gap-1"><Label>SKU {skuAuto && !editing && <span className="font-normal text-muted-foreground">(otomatis)</span>}</Label>
+                                <div className="flex gap-1">
+                                    <Input value={form.data.sku} onChange={(e) => { form.setData('sku', e.target.value.toUpperCase()); setSkuAuto(false); }} placeholder="cth: AQUA-600ML-482" required />
+                                    <Button type="button" variant="outline" size="icon" title="Generate ulang" onClick={() => { form.setData('sku', generateSKU(form.data.name)); setSkuAuto(true); }}><RefreshCw className="h-4 w-4" /></Button>
+                                </div>
+                                {form.errors.sku && <span className="text-xs text-red-600">{form.errors.sku}</span>}
+                            </div>
+                            <div className="grid gap-1"><Label>Satuan</Label>
+                                <select value={form.data.unit} onChange={(e) => form.setData('unit', e.target.value)} className="rounded border p-2">
+                                    {UNIT_OPTIONS.map((u) => (<option key={u} value={u}>{u}</option>))}
+                                </select>
+                            </div>
                         </div>
-                        <div className="grid gap-1"><Label>Nama</Label><Input value={form.data.name} onChange={(e) => form.setData('name', e.target.value)} required /></div>
+                        <div className="grid gap-1"><Label>Nama</Label><Input value={form.data.name} onChange={(e) => { const v = e.target.value; form.setData('name', v); if (skuAuto && !editing) form.setData('sku', generateSKU(v)); }} required /></div>
                         <div className="grid gap-1"><Label>Harga jual</Label><RupiahInput value={Number(form.data.selling_price) || 0} onValueChange={(n) => form.setData('selling_price', String(n))} /></div>
+                        {!editing ? (
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="grid gap-1"><Label>Stok awal</Label><QtyInput value={form.data.opening_stock} onValueChange={(n) => form.setData('opening_stock', n)} /></div>
+                                <div className="grid gap-1"><Label>HPP awal</Label><RupiahInput value={form.data.initial_cost} onValueChange={(n) => form.setData('initial_cost', n)} /></div>
+                            </div>
+                        ) : (
+                            <p className="rounded bg-muted p-2 text-xs text-muted-foreground">Stok: {formatQty(editing.stock)} | HPP: {formatIDR(editing.average_cost)} — berubah otomatis via pembelian/adjustment, tidak bisa edit manual.</p>
+                        )}
                         <div className="grid gap-1">
                             <Label>Tier harga beli (min qty → harga)</Label>
                             {form.data.tiers.map((t, i) => (
                                 <div key={i} className="flex gap-1">
-                                    <Input type="number" value={t.min_qty} onChange={(e) => { const tiers = [...form.data.tiers]; tiers[i].min_qty = Number(e.target.value); form.setData('tiers', tiers); }} className="w-28" />
+                                    <QtyInput value={t.min_qty} onValueChange={(n) => { const tiers = [...form.data.tiers]; tiers[i].min_qty = n; form.setData('tiers', tiers); }} className="w-28" />
                                     <RupiahInput value={t.purchase_price} onValueChange={(n) => { const tiers = [...form.data.tiers]; tiers[i].purchase_price = n; form.setData('tiers', tiers); }} />
                                     <Button type="button" variant="outline" onClick={() => form.setData('tiers', form.data.tiers.filter((_, j) => j !== i))}>x</Button>
                                 </div>

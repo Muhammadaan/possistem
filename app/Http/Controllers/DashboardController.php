@@ -22,7 +22,7 @@ class DashboardController extends Controller
         $omzet = (float) $salesToday->sum('total');
         $profit = (float) SaleItem::whereIn('sale_id', Sale::forBranch($branch->id)->whereDate('sale_date', $today)->pluck('id'))->sum('profit');
 
-        return Inertia::render('dashboard-pos', [
+        return Inertia::render('dashboard', [
             'branch' => $branch,
             'branches' => $this->branchOptions(),
             'isOwner' => request()->user()->isOwner(),

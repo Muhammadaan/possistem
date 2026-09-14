@@ -1,6 +1,8 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import BranchSwitcher from '@/components/branch-switcher';
+import ProductPicker from '@/components/product-picker';
+import QtyInput from '@/components/qty-input';
 import RupiahInput from '@/components/rupiah-input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -50,11 +52,8 @@ export default function PurchaseCreate({ branch, branches, isOwner, suppliers, p
                     </div>
                     {rows.map((r, i) => (
                         <div key={i} className="flex flex-wrap gap-2">
-                            <select value={r.product_id} onChange={(e) => { const v = [...rows]; v[i].product_id = Number(e.target.value); v[i].price = tierPrice(v[i].product_id, v[i].qty); setRows(v); }} className="rounded border p-2 w-64">
-                                <option value={0}>Pilih barang</option>
-                                {products.map((p) => (<option key={p.id} value={p.id}>{p.sku} - {p.name}</option>))}
-                            </select>
-                            <Input type="number" step="0.001" value={r.qty} onChange={(e) => { const v = [...rows]; v[i].qty = Number(e.target.value); v[i].price = tierPrice(v[i].product_id, v[i].qty) || v[i].price; setRows(v); }} className="w-28" />
+                            <ProductPicker products={products} value={r.product_id} onSelect={(id) => { const v = [...rows]; v[i].product_id = id; v[i].price = tierPrice(id, v[i].qty); setRows(v); }} />
+                            <QtyInput value={r.qty} onValueChange={(n) => { const v = [...rows]; v[i].qty = n; v[i].price = tierPrice(v[i].product_id, n) || v[i].price; setRows(v); }} className="w-28" />
                             <RupiahInput value={r.price} onValueChange={(n) => { const v = [...rows]; v[i].price = n; setRows(v); }} className="w-40" placeholder="Harga" />
                             <span className="p-2 text-sm">{formatIDR(r.qty * r.price)}</span>
                         </div>

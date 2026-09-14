@@ -170,7 +170,8 @@ return [
         /* @chisel-registration */
         Features::registration(),
         /* @end-chisel-registration */
-        Features::resetPasswords(),
+        // Fitur reset password nonaktif (POS internal, password dikelola Owner via menu Users).
+        // Features::resetPasswords(),
         /* @chisel-email-verification */
         Features::emailVerification(),
         /* @end-chisel-email-verification */
