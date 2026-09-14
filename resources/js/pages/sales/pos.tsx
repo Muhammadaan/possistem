@@ -7,6 +7,13 @@ import RupiahInput from '@/components/rupiah-input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { formatIDR, formatQty } from '@/lib/utils';
 
@@ -36,6 +43,7 @@ export default function Pos({
 }) {
     const [cart, setCart] = useState<CartLine[]>([]);
     const [q, setQ] = useState('');
+    const [confirmOpen, setConfirmOpen] = useState(false);
     const searchRef = useRef<HTMLInputElement>(null);
     const form = useForm({
         branch_id: branch.id,
@@ -389,16 +397,82 @@ export default function Pos({
 
                     <Button
                         size="lg"
-                        onClick={submit}
+                        onClick={() => canPay && setConfirmOpen(true)}
                         disabled={!canPay}
                         className="w-full text-base"
                     >
-                        {form.processing
-                            ? 'Memproses…'
-                            : `Bayar ${formatIDR(total)}`}
+                        Bayar {formatIDR(total)}
                     </Button>
                 </Card>
             </div>
+
+            <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Konfirmasi Pembayaran</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid max-h-56 gap-1 overflow-y-auto text-sm">
+                        {cart.map((c) => {
+                            const p = byId.get(c.product_id);
+                            return (
+                                <div
+                                    key={c.product_id}
+                                    className="flex justify-between gap-2"
+                                >
+                                    <span className="min-w-0 truncate">
+                                        {p?.name ?? `#${c.product_id}`}{' '}
+                                        <span className="text-muted-foreground">
+                                            ×{formatQty(c.qty)}
+                                        </span>
+                                    </span>
+                                    <span className="shrink-0 font-medium">
+                                        {formatIDR(c.qty * c.price)}
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className="grid gap-1 border-t pt-3 text-sm">
+                        <div className="flex justify-between">
+                            <span className="text-muted-foreground">Total</span>
+                            <span className="text-lg font-bold">
+                                {formatIDR(total)}
+                            </span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-muted-foreground">
+                                Bayar ({form.data.payment_method})
+                            </span>
+                            <span>{formatIDR(paid)}</span>
+                        </div>
+                        {isCash && (
+                            <div className="flex justify-between font-medium text-green-700">
+                                <span>Kembali</span>
+                                <span>{formatIDR(change)}</span>
+                            </div>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setConfirmOpen(false)}
+                        >
+                            Cek lagi
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                setConfirmOpen(false);
+                                submit();
+                            }}
+                            disabled={form.processing}
+                        >
+                            {form.processing
+                                ? 'Memproses…'
+                                : 'Ya, bayar sekarang'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }

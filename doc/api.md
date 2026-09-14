@@ -2,6 +2,9 @@
 
 Base URL: `http://<host>/api/v1` · Auth: `Authorization: Bearer <token>` (Sanctum) · Format: JSON.
 
+> Dokumentasi interaktif (Swagger UI, lengkap dengan contoh request/response & tombol Try it):
+> **`http://<host>/docs/api`** · OpenAPI JSON: `http://<host>/docs/api.json` (package `dedoc/scramble`, otomatis dari route + FormRequest).
+
 ## Auth
 
 ### POST `/login` (rate-limit 10/menit)
