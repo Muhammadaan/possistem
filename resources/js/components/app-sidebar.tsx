@@ -1,5 +1,16 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-react';
+import {
+    BookOpen,
+    FolderGit2,
+    LayoutGrid,
+    Store,
+    Package,
+    Truck,
+    ShoppingCart,
+    Receipt,
+    History,
+    Users,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -22,6 +33,15 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
+    { title: 'POS Dashboard', href: '/dashboard-pos', icon: Store },
+    { title: 'Kasir (POS)', href: '/sales/pos', icon: ShoppingCart },
+    { title: 'Produk', href: '/products', icon: Package },
+    { title: 'Pembelian', href: '/purchases', icon: Receipt },
+    { title: 'Penjualan', href: '/sales', icon: Receipt },
+    { title: 'Ledger Stok', href: '/stocks/ledger', icon: History },
+    { title: 'Supplier', href: '/suppliers', icon: Truck },
+    { title: 'Cabang', href: '/branches', icon: Store },
+    { title: 'Users', href: '/users', icon: Users },
 ];
 
 const footerNavItems: NavItem[] = [
