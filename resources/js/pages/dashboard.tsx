@@ -1,36 +1,31 @@
 import { Head } from '@inertiajs/react';
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
-import { dashboard } from '@/routes';
+import BranchSwitcher from '@/components/branch-switcher';
+import { Card } from '@/components/ui/card';
+import { formatIDR } from '@/lib/utils';
 
-export default function Dashboard() {
+type Branch = { id: number; code: string; name: string };
+
+export default function DashboardPos({ branch, branches, isOwner, omzetToday, profitToday, marginToday, lowStocks }: { branch: Branch; branches?: Branch[]; isOwner?: boolean; omzetToday: number; profitToday: number; marginToday: number; lowStocks: { id: number; sku: string; name: string; stock: string }[] }) {
     return (
         <>
-            <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
+            <Head title="Dashboard POS" />
+            <div className="space-y-4 p-4">
+                <div className="flex items-center justify-between">
+                    <h1 className="text-xl font-semibold">Dashboard — {branch.code} / {branch.name}</h1>
+                    <BranchSwitcher branch={branch} branches={branches} isOwner={isOwner} />
                 </div>
-                <div className="border-sidebar-border/70 dark:border-sidebar-border relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border md:min-h-min">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+                <div className="grid gap-4 md:grid-cols-3">
+                    <Card className="p-4"><div className="text-sm text-muted-foreground">Omzet Hari Ini</div><div className="text-2xl font-bold">{formatIDR(omzetToday)}</div></Card>
+                    <Card className="p-4"><div className="text-sm text-muted-foreground">Profit Hari Ini</div><div className="text-2xl font-bold">{formatIDR(profitToday)}</div></Card>
+                    <Card className="p-4"><div className="text-sm text-muted-foreground">Margin %</div><div className="text-2xl font-bold">{marginToday}%</div></Card>
                 </div>
+                <Card className="overflow-hidden p-0">
+                    <div className="p-2 font-semibold">Stok Terendah</div>
+                    <table className="w-full text-sm"><thead className="bg-muted"><tr><th className="p-2 text-left">SKU</th><th className="p-2 text-left">Nama</th><th className="p-2 text-right">Stok</th></tr></thead>
+                        <tbody>{lowStocks.map((p) => (<tr key={p.id} className="border-t"><td className="p-2 font-mono">{p.sku}</td><td className="p-2">{p.name}</td><td className={`p-2 text-right ${Number(p.stock) < 0 ? 'text-red-600 font-bold' : ''}`}>{p.stock}</td></tr>))}</tbody>
+                    </table>
+                </Card>
             </div>
         </>
     );
 }
-
-Dashboard.layout = {
-    breadcrumbs: [
-        {
-            title: 'Dashboard',
-            href: dashboard(),
-        },
-    ],
-};
