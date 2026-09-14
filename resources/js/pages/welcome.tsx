@@ -10,7 +10,7 @@ export default function Welcome() {
             <div className="flex min-h-screen flex-col items-center justify-center bg-[#FDFDFC] p-6 text-[#1b1b18] dark:bg-[#0a0a0a] dark:text-[#EDEDEC]">
                 <main className="flex w-full max-w-md flex-col items-center gap-4 rounded-lg bg-white p-10 text-center shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:bg-[#161615]">
                     <h1 className="text-2xl font-semibold">Sistem POS</h1>
-                   
+
                     {auth?.user ? (
                         <Link
                             href={dashboard()}

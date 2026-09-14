@@ -29,6 +29,26 @@ class DatabaseSeeder extends Seeder
             'name' => 'Kasir Pusat', 'password' => 'password', 'role' => 'CASHIER', 'branch_id' => $pusat->id,
         ]);
 
-   
+        foreach ([$pusat, $cabang] as $branch) {
+            $aqua = Product::firstOrCreate(['branch_id' => $branch->id, 'sku' => 'AQUA-600'], [
+                'name' => 'Aqua 600ml', 'unit' => 'pcs', 'selling_price' => 5000, 'is_active' => true,
+            ]);
+            $aqua->priceTiers()->delete();
+            $aqua->priceTiers()->createMany([
+                ['min_qty' => 1, 'purchase_price' => 3500],
+                ['min_qty' => 12, 'purchase_price' => 3200],
+            ]);
+
+            $mie = Product::firstOrCreate(['branch_id' => $branch->id, 'sku' => 'MIE-GRG'], [
+                'name' => 'Indomie Goreng', 'unit' => 'pcs', 'selling_price' => 3500, 'is_active' => true,
+            ]);
+
+            if ((float) $aqua->fresh()->stock <= 0) {
+                PurchaseService::create($branch, $supplier->id, null, now()->toDateTimeString(), [
+                    ['product_id' => $aqua->id, 'qty' => 24, 'price' => 3200],
+                    ['product_id' => $mie->id, 'qty' => 40, 'price' => 2800],
+                ]);
+            }
+        }
     }
 }

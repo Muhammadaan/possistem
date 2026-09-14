@@ -10,10 +10,17 @@ type Props = {
     disabled?: boolean;
 };
 
-const group = (n: number) => (n ? new Intl.NumberFormat('id-ID').format(n) : '');
+const group = (n: number) =>
+    n ? new Intl.NumberFormat('id-ID').format(n) : '';
 
 /** Input Rupiah: kosong di awal, ketik "10000" → tampil "Rp 10.000", simpan number. */
-export default function RupiahInput({ value, onValueChange, placeholder = 'Rp 0', className, disabled }: Props) {
+export default function RupiahInput({
+    value,
+    onValueChange,
+    placeholder = 'Rp 0',
+    className,
+    disabled,
+}: Props) {
     const numeric = Number(value) || 0;
     const [text, setText] = useState(numeric ? formatIDR(numeric) : '');
     const [focus, setFocus] = useState(false);

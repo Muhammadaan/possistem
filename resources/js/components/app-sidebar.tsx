@@ -43,9 +43,7 @@ const mainNavItems: NavItem[] = [
     { title: 'Users', href: '/users', icon: Users },
 ];
 
-const footerNavItems: NavItem[] = [
-   
-];
+const footerNavItems: NavItem[] = [];
 
 export function AppSidebar() {
     return (

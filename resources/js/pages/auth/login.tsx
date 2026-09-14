@@ -78,7 +78,6 @@ export default function Login({ status }: Props) {
                         </div>
 
                         {/* @chisel-registration - registrasi publik nonaktif, user dibuat via menu Users */}
-                        {/* @end-chisel-registration */}
                     </>
                 )}
             </Form>

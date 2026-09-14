@@ -2,10 +2,18 @@ import { router } from '@inertiajs/react';
 
 type Branch = { id: number; code: string; name: string };
 
-export default function BranchSwitcher({ branch, branches, isOwner }: { branch: Branch; branches?: Branch[]; isOwner?: boolean }) {
+export default function BranchSwitcher({
+    branch,
+    branches,
+    isOwner,
+}: {
+    branch: Branch;
+    branches?: Branch[];
+    isOwner?: boolean;
+}) {
     if (!isOwner || !branches || branches.length <= 1) {
         return (
-            <span className="rounded bg-muted px-2 py-1 text-xs font-medium">
+            <span className="bg-muted rounded px-2 py-1 text-xs font-medium">
                 {branch.code} - {branch.name}
             </span>
         );
@@ -19,9 +27,15 @@ export default function BranchSwitcher({ branch, branches, isOwner }: { branch: 
     };
 
     return (
-        <select value={branch.id} onChange={(e) => onChange(e.target.value)} className="rounded border p-1.5 text-sm">
+        <select
+            value={branch.id}
+            onChange={(e) => onChange(e.target.value)}
+            className="rounded border p-1.5 text-sm"
+        >
             {branches.map((b) => (
-                <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
+                <option key={b.id} value={b.id}>
+                    {b.code} - {b.name}
+                </option>
             ))}
         </select>
     );

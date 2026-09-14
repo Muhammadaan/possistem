@@ -10,7 +10,13 @@ type Props = {
 };
 
 /** Input kuantitas: fokus langsung ter-blok (ketik langsung ganti), dukung desimal maks 3 digit. */
-export default function QtyInput({ value, onValueChange, placeholder = 'Qty', className, disabled }: Props) {
+export default function QtyInput({
+    value,
+    onValueChange,
+    placeholder = 'Qty',
+    className,
+    disabled,
+}: Props) {
     const [text, setText] = useState(value ? String(value) : '');
     const [focus, setFocus] = useState(false);
 
