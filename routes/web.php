@@ -18,14 +18,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('branches', [BranchController::class, 'index'])->name('branches.index');
     Route::post('branches', [BranchController::class, 'store'])->name('branches.store');
     Route::put('branches/{branch}', [BranchController::class, 'update'])->name('branches.update');
+    Route::delete('branches/{branch}', [BranchController::class, 'destroy'])->name('branches.destroy');
 
     Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
     Route::post('suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
     Route::put('suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
+    Route::delete('suppliers/{supplier}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
 
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
     Route::post('products', [ProductController::class, 'store'])->name('products.store');
     Route::put('products/{product}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
     Route::get('purchases', [PurchaseController::class, 'index'])->name('purchases.index');
     Route::get('purchases/create', [PurchaseController::class, 'create'])->name('purchases.create');

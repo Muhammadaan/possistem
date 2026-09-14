@@ -24,7 +24,9 @@ class PurchaseController extends Controller
             'branch' => $branch,
             'branches' => $this->branchOptions(),
             'isOwner' => request()->user()->isOwner(),
-            'purchases' => Purchase::forBranch($branch->id)->with('supplier')->latest()->paginate(20)->withQueryString(),
+            'purchases' => Purchase::forBranch($branch->id)->with(['supplier', 'items.product'])->latest()->paginate(20)->withQueryString(),
+            'suppliers' => Supplier::where('is_active', true)->orderBy('name')->get(['id', 'name']),
+            'products' => Product::forBranch($branch->id)->active()->with('priceTiers')->orderBy('name')->get(),
         ]);
     }
 

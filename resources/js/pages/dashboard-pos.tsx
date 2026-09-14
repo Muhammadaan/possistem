@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
-import { Card } from '@/components/ui/card';
 import BranchSwitcher from '@/components/branch-switcher';
+import { Card } from '@/components/ui/card';
+import { formatIDR } from '@/lib/utils';
 
 type Branch = { id: number; code: string; name: string };
 
@@ -14,8 +15,8 @@ export default function DashboardPos({ branch, branches, isOwner, omzetToday, pr
                     <BranchSwitcher branch={branch} branches={branches} isOwner={isOwner} />
                 </div>
                 <div className="grid gap-4 md:grid-cols-3">
-                    <Card className="p-4"><div className="text-sm text-muted-foreground">Omzet Hari Ini</div><div className="text-2xl font-bold">{omzetToday.toLocaleString()}</div></Card>
-                    <Card className="p-4"><div className="text-sm text-muted-foreground">Profit Hari Ini</div><div className="text-2xl font-bold">{profitToday.toLocaleString()}</div></Card>
+                    <Card className="p-4"><div className="text-sm text-muted-foreground">Omzet Hari Ini</div><div className="text-2xl font-bold">{formatIDR(omzetToday)}</div></Card>
+                    <Card className="p-4"><div className="text-sm text-muted-foreground">Profit Hari Ini</div><div className="text-2xl font-bold">{formatIDR(profitToday)}</div></Card>
                     <Card className="p-4"><div className="text-sm text-muted-foreground">Margin %</div><div className="text-2xl font-bold">{marginToday}%</div></Card>
                 </div>
                 <Card className="overflow-hidden p-0">

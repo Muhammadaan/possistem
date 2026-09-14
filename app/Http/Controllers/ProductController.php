@@ -82,4 +82,20 @@ class ProductController extends Controller
 
         return redirect()->back()->with('success', 'Produk diupdate.');
     }
+
+    public function destroy(Product $product)
+    {
+        $user = request()->user();
+        if (! $user->isOwner()) {
+            abort_if($product->branch_id !== $user->branch_id, 403);
+        }
+
+        if ($product->purchaseItems()->exists() || $product->saleItems()->exists()) {
+            return redirect()->back()->withErrors(['delete' => 'Produk tidak bisa dihapus karena sudah ada transaksi.']);
+        }
+
+        $product->delete();
+
+        return redirect()->back()->with('success', 'Produk dihapus.');
+    }
 }

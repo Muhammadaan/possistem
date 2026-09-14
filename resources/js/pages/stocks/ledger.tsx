@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import BranchSwitcher from '@/components/branch-switcher';
 import { Card } from '@/components/ui/card';
+import { formatQty } from '@/lib/utils';
 
 type Branch = { id: number; code: string; name: string };
 
@@ -15,7 +16,7 @@ export default function Ledger({ branch, branches, isOwner, movements }: { branc
                 </div>
                 <Card className="overflow-hidden p-0">
                     <table className="w-full text-sm"><thead className="bg-muted"><tr><th className="p-2 text-left">Waktu</th><th className="p-2 text-left">Barang</th><th className="p-2">Tipe</th><th className="p-2 text-right">Qty</th><th className="p-2 text-right">Before→After</th></tr></thead>
-                        <tbody>{movements.data.map((m) => (<tr key={m.id} className="border-t"><td className="p-2">{m.created_at}</td><td className="p-2">{m.product.sku} - {m.product.name}</td><td className="p-2 text-center">{m.type}</td><td className="p-2 text-right">{m.qty}</td><td className={`p-2 text-right ${Number(m.stock_after) < 0 ? 'text-red-600 font-bold' : ''}`}>{m.stock_before}→{m.stock_after}</td></tr>))}</tbody>
+                        <tbody>{movements.data.map((m) => (<tr key={m.id} className="border-t"><td className="p-2">{m.created_at}</td><td className="p-2">{m.product.sku} - {m.product.name}</td><td className="p-2 text-center">{m.type}</td><td className="p-2 text-right">{formatQty(m.qty)}</td><td className={`p-2 text-right ${Number(m.stock_after) < 0 ? 'font-bold text-red-600' : ''}`}>{formatQty(m.stock_before)}→{formatQty(m.stock_after)}</td></tr>))}</tbody>
                     </table>
                 </Card>
             </div>

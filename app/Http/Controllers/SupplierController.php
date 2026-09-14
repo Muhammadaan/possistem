@@ -29,4 +29,11 @@ class SupplierController extends Controller
 
         return redirect()->back()->with('success', 'Supplier diupdate.');
     }
+
+    public function destroy(Supplier $supplier)
+    {
+        $supplier->delete();
+
+        return redirect()->back()->with('success', 'Supplier dihapus.');
+    }
 }

@@ -41,7 +41,7 @@ class UserController extends Controller
         $data = $request->validated();
 
         if ($user->id === $request->user()->id && $data['role'] !== $user->role) {
-            abort(422, 'Tidak bisa mengubah role sendiri.');
+            return redirect()->back()->withErrors(['role' => 'Tidak bisa mengubah role sendiri.']);
         }
 
         $user->update([
@@ -61,7 +61,9 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         abort_unless(request()->user()->isOwner(), 403);
-        abort_if($user->id === request()->user()->id, 422, 'Tidak bisa hapus akun sendiri.');
+        if ($user->id === request()->user()->id) {
+            return redirect()->back()->withErrors(['delete' => 'Tidak bisa hapus akun sendiri.']);
+        }
 
         $user->delete();
 

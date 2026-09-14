@@ -1,9 +1,11 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import BranchSwitcher from '@/components/branch-switcher';
+import RupiahInput from '@/components/rupiah-input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { formatIDR } from '@/lib/utils';
 
 type Branch = { id: number; code: string; name: string };
 type Product = { id: number; sku: string; name: string; price_tiers: { min_qty: string; purchase_price: string }[] };
@@ -53,13 +55,13 @@ export default function PurchaseCreate({ branch, branches, isOwner, suppliers, p
                                 {products.map((p) => (<option key={p.id} value={p.id}>{p.sku} - {p.name}</option>))}
                             </select>
                             <Input type="number" step="0.001" value={r.qty} onChange={(e) => { const v = [...rows]; v[i].qty = Number(e.target.value); v[i].price = tierPrice(v[i].product_id, v[i].qty) || v[i].price; setRows(v); }} className="w-28" />
-                            <Input type="number" step="0.01" value={r.price} onChange={(e) => { const v = [...rows]; v[i].price = Number(e.target.value); setRows(v); }} className="w-36" />
-                            <span className="p-2 text-sm">{(r.qty * r.price).toLocaleString()}</span>
+                            <RupiahInput value={r.price} onValueChange={(n) => { const v = [...rows]; v[i].price = n; setRows(v); }} className="w-40" placeholder="Harga" />
+                            <span className="p-2 text-sm">{formatIDR(r.qty * r.price)}</span>
                         </div>
                     ))}
                     <div className="flex gap-2">
                         <Button type="button" variant="outline" onClick={() => setRows([...rows, { product_id: 0, qty: 1, price: 0 }])}>+ Baris</Button>
-                        <Button onClick={submit} disabled={form.processing}>Simpan (Total {total.toLocaleString()})</Button>
+                        <Button onClick={submit} disabled={form.processing}>Simpan (Total {formatIDR(total)})</Button>
                     </div>
                 </Card>
             </div>
